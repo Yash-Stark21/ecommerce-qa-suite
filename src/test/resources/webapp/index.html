@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TechMart E-Commerce | QA Automation Storefront</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --success: #15803d;
+            --danger: #b91c1c;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); }
+        header {
+            background: var(--primary); color: #fff; padding: 14px 28px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        header h1 { margin: 0; font-size: 1.25rem; letter-spacing: 0.4px; }
+        .badge {
+            background: #f59e0b; color: #111827; font-weight: 700;
+            padding: 4px 12px; border-radius: 999px; font-size: 0.85rem;
+        }
+        .container { max-width: 960px; margin: 28px auto; padding: 0 16px; }
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 24px; margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        }
+        .hidden { display: none !important; }
+        h2 { margin-top: 0; color: var(--primary); font-size: 1.25rem; }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9rem; }
+        input[type="text"], input[type="password"], input[type="number"] {
+            width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1;
+            border-radius: 6px; font-size: 0.95rem;
+        }
+        button {
+            background: var(--primary); color: #fff; border: none;
+            padding: 10px 18px; border-radius: 6px; font-weight: 600;
+            cursor: pointer; font-size: 0.95rem;
+        }
+        button:hover { background: var(--primary-light); }
+        button.secondary { background: #475569; }
+        .alert-error {
+            background: #fef2f2; color: var(--danger); border: 1px solid #fecaca;
+            padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-weight: 600;
+        }
+        .alert-success {
+            background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0;
+            padding: 12px 16px; border-radius: 6px; margin-bottom: 14px; font-weight: 600;
+        }
+        .product-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); padding: 14px 0;
+        }
+        .summary-box {
+            background: #f1f5f9; padding: 14px; border-radius: 8px; margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TechMart E-Commerce Portal</h1>
+    <div>
+        <span id="user-greeting">Guest</span> |
+        Cart Count: <span id="cart-badge" class="badge">0</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- SECTION 1: LOGIN SCREEN (Epic ECOM-EP-01) -->
+    <div id="login-section" class="card">
+        <h2>Customer Sign In (ECOM-EP-01)</h2>
+        <div id="login-error" class="alert-error hidden"></div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="standard_user or locked_out_user" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="secret_sauce" />
+        </div>
+        <button id="login-btn" onclick="handleLogin()">Login</button>
+    </div>
+
+    <!-- SECTION 2: PRODUCT CATALOG & CART (Epic ECOM-EP-02) -->
+    <div id="catalog-section" class="card hidden">
+        <h2>Product Catalog &amp; Shopping Cart (ECOM-EP-02)</h2>
+        <div id="cart-error" class="alert-error hidden"></div>
+
+        <div class="product-row">
+            <div>
+                <strong id="product-name">Wireless Mechanical Keyboard Pro</strong>
+                <div style="color: var(--muted); font-size: 0.9rem;">Unit Price: $<span id="unit-price">100.00</span> | Allowed Qty per Order: 1 to 10</div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <label for="item-qty" style="margin: 0;">Qty:</label>
+                <input type="number" id="item-qty" value="1" style="width: 80px;" />
+                <button id="update-cart-btn" onclick="handleUpdateCart()">Add / Update Cart</button>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div>Subtotal: $<span id="cart-subtotal">0.00</span></div>
+            <div style="margin-top: 10px;">
+                <button id="proceed-checkout-btn" onclick="handleProceedToCheckout()">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: CHECKOUT & SHIPPING WORKFLOW (Epic ECOM-EP-03) -->
+    <div id="checkout-section" class="card hidden">
+        <h2>Checkout &amp; Shipping Details (ECOM-EP-03)</h2>
+        <div id="checkout-error" class="alert-error hidden"></div>
+        <div id="promo-msg" class="alert-success hidden"></div>
+
+        <div class="form-group">
+            <label for="first-name">First Name *</label>
+            <input type="text" id="first-name" placeholder="Enter First Name" />
+        </div>
+        <div class="form-group">
+            <label for="last-name">Last Name *</label>
+            <input type="text" id="last-name" placeholder="Enter Last Name" />
+        </div>
+        <div class="form-group">
+            <label for="postal-code">Postal / PIN Code (Boundary: 5 to 6 digits) *</label>
+            <input type="text" id="postal-code" placeholder="e.g. 56001 or 560001" />
+        </div>
+        <div class="form-group" style="display: flex; gap: 10px; align-items: flex-end;">
+            <div style="flex: 1;">
+                <label for="promo-code">Promo Code (Optional - Try SAVE10)</label>
+                <input type="text" id="promo-code" placeholder="SAVE10" />
+            </div>
+            <button id="apply-promo-btn" class="secondary" onclick="handleApplyPromo()">Apply Promo</button>
+        </div>
+
+        <div class="summary-box">
+            <div>Discount Applied: $<span id="discount-amount">0.00</span></div>
+            <div style="font-weight: 700; font-size: 1.05rem; margin-top: 4px;">
+                Final Payable Total: $<span id="final-total">0.00</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <button id="place-order-btn" onclick="handlePlaceOrder()">Place Order</button>
+        </div>
+    </div>
+
+    <!-- SECTION 4: ORDER CONFIRMATION -->
+    <div id="confirmation-section" class="card hidden">
+        <h2>Order Confirmation</h2>
+        <div id="confirmation-banner" class="alert-success">
+            Thank you for your order! Your order has been dispatched.
+        </div>
+        <p>Order Reference ID: <strong id="order-id">ORD-2026-8492</strong></p>
+        <p>Paid Amount: $<strong id="confirmed-amount">0.00</strong></p>
+    </div>
+
+</div>
+
+<script>
+    let currentSubtotal = 0.0;
+    let currentDiscount = 0.0;
+    const UNIT_PRICE = 100.0;
+
+    function showElement(id, text) {
+        const el = document.getElementById(id);
+        if (text !== undefined) el.textContent = text;
+        el.classList.remove('hidden');
+    }
+
+    function hideElement(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function handleLogin() {
+        hideElement('login-error');
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
+
+        if (!user || !pass) {
+            showElement('login-error', 'Error: Username and Password are required');
+            return;
+        }
+        if (user === 'locked_out_user') {
+            showElement('login-error', 'Error: Sorry, this user account has been locked out.');
+            return;
+        }
+        if (user === 'standard_user' && pass === 'secret_sauce') {
+            document.getElementById('user-greeting').textContent = 'Welcome, ' + user;
+            hideElement('login-section');
+            showElement('catalog-section');
+        } else {
+            showElement('login-error', 'Error: Invalid username or password');
+        }
+    }
+
+    function handleUpdateCart() {
+        hideElement('cart-error');
+        const rawQty = document.getElementById('item-qty').value.trim();
+        const qty = Number(rawQty);
+
+        // Boundary Value Validation: Min = 1, Max = 10
+        if (!Number.isInteger(qty) || rawQty === '' || qty < 1) {
+            showElement('cart-error', 'Boundary Error: Quantity must be at least 1');
+            return;
+        }
+        if (qty > 10) {
+            showElement('cart-error', 'Boundary Error: Maximum allowed quantity per order is 10');
+            return;
+        }
+
+        currentSubtotal = qty * UNIT_PRICE;
+        document.getElementById('cart-badge').textContent = String(qty);
+        document.getElementById('cart-subtotal').textContent = currentSubtotal.toFixed(2);
+        document.getElementById('final-total').textContent = (currentSubtotal - currentDiscount).toFixed(2);
+    }
+
+    function handleProceedToCheckout() {
+        hideElement('cart-error');
+        const badgeCount = Number(document.getElementById('cart-badge').textContent);
+        if (badgeCount < 1) {
+            showElement('cart-error', 'Error: Please add at least 1 item to cart before checkout');
+            return;
+        }
+        hideElement('catalog-section');
+        showElement('checkout-section');
+        document.getElementById('final-total').textContent = (currentSubtotal - currentDiscount).toFixed(2);
+    }
+
+    function handleApplyPromo() {
+        hideElement('checkout-error');
+        hideElement('promo-msg');
+        const code = document.getElementById('promo-code').value.trim().toUpperCase();
+        if (code === 'SAVE10') {
+            currentDiscount = currentSubtotal * 0.10;
+            document.getElementById('discount-amount').textContent = currentDiscount.toFixed(2);
+            document.getElementById('final-total').textContent = (currentSubtotal - currentDiscount).toFixed(2);
+            showElement('promo-msg', 'Promo SAVE10 applied: 10% discount deducted!');
+        } else {
+            currentDiscount = 0.0;
+            document.getElementById('discount-amount').textContent = '0.00';
+            document.getElementById('final-total').textContent = currentSubtotal.toFixed(2);
+            showElement('checkout-error', 'Error: Invalid or expired promo code');
+        }
+    }
+
+    function handlePlaceOrder() {
+        hideElement('checkout-error');
+        const firstName = document.getElementById('first-name').value.trim();
+        const lastName = document.getElementById('last-name').value.trim();
+        const postalCode = document.getElementById('postal-code').value.trim();
+
+        if (!firstName || !lastName) {
+            showElement('checkout-error', 'Error: First Name and Last Name are required');
+            return;
+        }
+        // Boundary Value Validation: Postal code must be numeric and 5 to 6 digits long
+        if (!/^\d+$/.test(postalCode) || postalCode.length < 5 || postalCode.length > 6) {
+            showElement('checkout-error', 'Boundary Error: Postal Code must be between 5 and 6 numeric digits');
+            return;
+        }
+
+        const payable = (currentSubtotal - currentDiscount).toFixed(2);
+        document.getElementById('confirmed-amount').textContent = payable;
+        hideElement('checkout-section');
+        showElement('confirmation-section');
+    }
+</script>
+</body>
+</html>
